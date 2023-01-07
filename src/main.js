@@ -14,6 +14,10 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
+import directives from '@/directives'
+Object.keys(directives).forEach(name =>{
+  Vue.directive(name, directives[name])
+})
 
 
 if (process.env.NODE_ENV === 'production') {

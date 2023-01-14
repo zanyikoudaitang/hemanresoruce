@@ -29,7 +29,7 @@
 </template>
 <script>
 import {delDepartments} from "@/api/departments"
-import { type } from "os";
+
 export default {
     name: 'TreeTools',
     props: {
@@ -47,11 +47,14 @@ export default {
             switch (command) {
                 case command = 'add':
                     // 添加部门
+                    this.$emit('addDepts',this.treeNode)
                     break;
                 case command = 'edit':
                     // 编辑部门
+                    this.$emit('editDept', this.treeNode)
                     break;
                 case command = 'del':
+                    // 删除部门
                     const ret = await this.$confirm('确定删除吗？',{
                         confirmButtonText:'确定',
                         cancelButtonText:'取消',
@@ -70,6 +73,7 @@ export default {
                             type:'success',
                             message: '删除成功'
                         })
+                        this.$emit('delDept')
                     } catch (error) {
                         console.log(error);
                     }

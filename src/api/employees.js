@@ -102,6 +102,13 @@ export function updateJob(data) {
 
 
 
+export function assignRole(data) {
+  return request({
+    url: '/sys/user/assignRoles',
+    method: 'put',
+    data
+  })
+}
 
 
 

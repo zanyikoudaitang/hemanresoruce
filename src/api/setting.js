@@ -55,3 +55,10 @@ export function getRoleInfoById(id) {
   }
 
 
+  export function assignPerm(data) {
+    return request({
+      url: '/sys/role/assignPrem',
+      method: 'put',
+      data
+    })
+  }

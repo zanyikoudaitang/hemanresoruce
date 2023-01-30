@@ -14,6 +14,12 @@
         <el-table :data="list" border>
           <el-table-column label="序号" sortable="" type="index" />
           <el-table-column label="姓名" sortable="" prop="username" />
+          <el-table-column label="头像" sortable="" prop="staffPhoto">
+            <template #default="{ row }">
+              <img @click="openQrCode(row.staffPhoto)" v-imageError="defaultUserHeaderImg"
+                style="width:100px;height:100px;display:block;margin:0 auto;" :src="row.staffPhoto" alt="">
+            </template>
+          </el-table-column>
           <el-table-column label="工号" sortable="" prop="workNumber" />
           <el-table-column label="聘用形式" sortable="" prop="formOfEmployment" :formatter="formatEmployment" />
           <el-table-column label="部门" sortable="" prop="departmentName" />
@@ -34,7 +40,7 @@
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
-              <el-button type="text" size="small">角色</el-button>
+              <el-button type="text" size="small" @click="onAssignRole(row.id)">角色</el-button>
               <el-button type="text" size="small" @click="deleteEmployee(row.id)">删除</el-button>
             </template>
           </el-table-column>
@@ -49,15 +55,25 @@
     <AddEmployee :show-dialog.sync="showDialog" />
 
 
+
+    <AssignRole ref='assignRole' :show-role-dialog.sync="showRoleDialog" :user-id="userId"></AssignRole>
+    <el-dialog title="二维码" :visible.sync="isShowQrCodeDialog">
+      <el-row type="flex" justify="center">
+        <canvas ref="myCanvas" />
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import employeeEnum from '@/api/constant/employees'
 import AddEmployee from './components/add-employee.vue'
-import { getEmployeeList, delEmployee } from '@/api/employees'
-import { formatDate } from '@/filters' 
+import AssignRole from './components/assign-role.vue'
 
+
+import { getEmployeeList, delEmployee } from '@/api/employees'
+import { formatDate } from '@/filters'
+import QrCode from 'qrcode'
 
 export default {
   data() {
@@ -67,19 +83,29 @@ export default {
       page: {
         page: 1, // 当前页码
         size: 10,
-        total: 0 // 总数
+        total: 0,// 总数
       },
+      isShowQrCodeDialog: false,
       showDialog: false,
-
+      defaultUserHeaderImg: require('@/assets/common/bigUserHeader.png'),
+      showRoleDialog:false,
+      userId:' ',
     }
   },
   components: {
-    AddEmployee
+    AddEmployee,
+    AssignRole
   },
   created() {
     this.getEmployeeList()
   },
   methods: {
+    async onAssignRole(id){
+      this.userId = id
+      await this.$refs.assignRole.getUserDetailById(id)
+      this.showRoleDialog = true
+
+    },
     formatEmployment(row, column, cellValue, index) {
       const item = employeeEnum.hireType.find(it => it.id === cellValue)
       return item ? item.value : '未知'
@@ -144,8 +170,8 @@ export default {
           header: Object.keys(headers),
           data,
           filename: '员工资料表',
-          multiHeader, 
-          merges 
+          multiHeader,
+          merges
 
         })
       })
@@ -164,6 +190,14 @@ export default {
           return item[headers[key]]
         })
       })
+    },
+    openQrCode(url) {
+      this.isShowQrCodeDialog = true
+      this.$nextTick(() => {
+          // 此时可以确认已经有ref对象了
+          QrCode.toCanvas(this.$refs.myCanvas, url) // 将地址转化成二维码
+          // 如果转化的二维码后面信息 是一个地址的话 就会跳转到该地址 如果不是地址就会显示内容
+        })
     }
 
 

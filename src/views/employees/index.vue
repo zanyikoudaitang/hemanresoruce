@@ -36,7 +36,9 @@
           </el-table-column>
           <el-table-column label="操作" sortable="" fixed="right" width="280">
             <template #default="{ row }">
-              <el-button type="text" size="small" @click="$router.push(`/employees/detail/${row.id}`)">查看</el-button>
+              <el-button type="text" size="small"
+                v-if="checkPermission('view')"
+               @click="$router.push(`/employees/detail/${row.id}`)">查看</el-button>
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
@@ -69,7 +71,6 @@
 import employeeEnum from '@/api/constant/employees'
 import AddEmployee from './components/add-employee.vue'
 import AssignRole from './components/assign-role.vue'
-
 
 import { getEmployeeList, delEmployee } from '@/api/employees'
 import { formatDate } from '@/filters'
@@ -198,7 +199,10 @@ export default {
           QrCode.toCanvas(this.$refs.myCanvas, url) // 将地址转化成二维码
           // 如果转化的二维码后面信息 是一个地址的话 就会跳转到该地址 如果不是地址就会显示内容
         })
-    }
+    },
+    // checkPermission(value){
+    //   return this.$store.state.user.userInfo.roles.points.includes(value)
+    // }
 
 
 

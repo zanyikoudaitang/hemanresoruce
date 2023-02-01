@@ -21,6 +21,9 @@ import '@/components'
 
 import * as filters from '@/filters'
 
+import checkPermission from '@/mixin/checkPermission'
+
+Vue.mixin(checkPermission)
 
 Object.keys(filters).forEach(key => {
   // 注册过滤器
